@@ -4,7 +4,7 @@ Foco: posicionamento de Sinop (Aguas de Sinop) frente aos demais
 municipios do estado, com base em indicadores do SNIS.
 
 Indicadores utilizados:
-  IN023 - Indice de atendimento urbano de agua (%)
+  IN055 - Indice de atendimento total de agua (%)
   IN015 - Indice de coleta de esgoto (%)
   IN049 - Indice de perdas na distribuicao (%)
   FN033 - Investimentos totais realizados pelo prestador (R$)
@@ -21,7 +21,7 @@ import streamlit as st
 # Configuracao geral
 # ---------------------------------------------------------------------------
 
-DATA_PATH = Path(__file__).parent / "data" / "snis_mt_2023.csv"
+DATA_PATH = Path(__file__).parent / "data" / "snis_mt_2022.csv"
 
 MUNICIPIO_DESTAQUE = "Sinop"
 
@@ -30,9 +30,9 @@ COR_PADRAO = "#A8DADC"     # demais municipios
 COR_MEDIA = "#1D3557"      # linha de media estadual
 
 INDICADORES = {
-    "IN023": {
-        "label": "IN023 - Atendimento urbano de agua (%)",
-        "descricao": "Percentual da populacao urbana atendida com abastecimento de agua.",
+    "IN055": {
+        "label": "IN055 - Atendimento total de agua (%)",
+        "descricao": "Percentual da populacao total (urbana + rural) atendida com abastecimento de agua.",
         "melhor": "maior",
         "formato": "{:.1f}%",
     },
@@ -76,7 +76,7 @@ def carregar_dados(caminho: Path) -> pd.DataFrame:
         "codigo_ibge",
         "municipio",
         "populacao_total",
-        "IN023",
+        "IN055",
         "IN015",
         "IN049",
         "FN033",
@@ -165,14 +165,14 @@ linha_sinop = df_ano[df_ano["municipio"] == MUNICIPIO_DESTAQUE]
 
 if not linha_sinop.empty:
     sinop = linha_sinop.iloc[0]
-    media_mt = df_ano[["IN023", "IN015", "IN049", "fn033_per_capita"]].mean()
+    media_mt = df_ano[["IN055", "IN015", "IN049", "fn033_per_capita"]].mean()
 
     col1, col2, col3, col4 = st.columns(4)
 
     col1.metric(
-        "IN023 - Atendimento de agua",
-        f"{sinop['IN023']:.1f}%",
-        f"{sinop['IN023'] - media_mt['IN023']:+.1f} p.p. vs media MT",
+        "IN055 - Atendimento de agua",
+        f"{sinop['IN055']:.1f}%",
+        f"{sinop['IN055'] - media_mt['IN055']:+.1f} p.p. vs media MT",
     )
     col2.metric(
         "IN015 - Coleta de esgoto",
@@ -253,20 +253,20 @@ def calcular_ranking(df_base: pd.DataFrame, coluna: str, melhor: str) -> tuple[i
 # ---------------------------------------------------------------------------
 
 st.header("Cobertura de agua e esgoto")
-tab_agua, tab_esgoto = st.tabs(["IN023 - Agua", "IN015 - Esgoto"])
+tab_agua, tab_esgoto = st.tabs(["IN055 - Agua", "IN015 - Esgoto"])
 
 with tab_agua:
     st.plotly_chart(
         grafico_barras_comparativo(
             df_filtro,
-            "IN023",
-            "Indice de atendimento urbano de agua (IN023) - Sinop vs MT",
-            "IN023 (%)",
+            "IN055",
+            "Indice de atendimento total de agua (IN055) - Sinop vs MT",
+            "IN055 (%)",
             "%{y:.1f}%",
         ),
         use_container_width=True,
     )
-    st.caption(INDICADORES["IN023"]["descricao"])
+    st.caption(INDICADORES["IN055"]["descricao"])
 
 with tab_esgoto:
     st.plotly_chart(
@@ -376,7 +376,7 @@ with st.expander("Ver dados utilizados"):
         "municipio",
         "populacao_total",
         "prestador",
-        "IN023",
+        "IN055",
         "IN015",
         "IN049",
         "FN033",
@@ -390,7 +390,7 @@ with st.expander("Ver dados utilizados"):
 
 st.caption(
     "Dados: Sistema Nacional de Informacoes sobre Saneamento (SNIS), "
-    "Ministerio das Cidades. Caso o arquivo `data/snis_mt_2023.csv` ainda "
+    "Ministerio das Cidades. Caso o arquivo `data/snis_mt_2022.csv` ainda "
     "contenha o dataset de EXEMPLO, substitua-o pelos dados reais antes de "
     "usar este dashboard para analises oficiais (ver README.md)."
 )

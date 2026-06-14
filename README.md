@@ -10,54 +10,59 @@ sobre Saneamento**):
 
 | Código | Indicador | Descrição |
 |---|---|---|
-| `IN023` | Índice de atendimento urbano de água | % da população urbana atendida com abastecimento de água |
+| `IN055` | Índice de atendimento total de água | % da população total (urbana + rural) atendida com abastecimento de água |
 | `IN015` | Índice de coleta de esgoto | % do volume de água consumido cujo esgoto correspondente é coletado |
 | `IN049` | Índice de perdas na distribuição | % do volume de água produzido que se perde até o consumo (quanto menor, melhor) |
 | `FN033` | Investimentos totais realizados pelo prestador | Valor em R$ investido pelo prestador no ano de referência |
 
 ---
 
-## ⚠️ Sobre os dados incluídos neste repositório
+## Sobre os dados incluídos neste repositório
 
-O arquivo `data/snis_mt_2023.csv` contém:
+O arquivo `data/snis_mt_2022.csv` contém **dados reais do SNIS** (Diagnóstico
+2022, último disponível no momento da atualização):
 
-- **Lista real** dos 142 municípios de Mato Grosso e sua **população real**
-  (estimativas IBGE 2021), obtidos via API pública do IBGE.
-- **Valores de IN023, IN015, IN049 e FN033 SINTÉTICOS** (gerados por
-  `scripts/generate_sample_data.py`), usados apenas como placeholder para
-  que o dashboard funcione "out of the box" durante o desenvolvimento.
+- **40 dos 142 municípios de MT** — os demais não tinham os indicadores
+  `IN055`, `IN015`, `IN049` ou `FN033` informados/preenchidos no SNIS 2022 e
+  por isso não entraram no export.
+- `codigo_ibge`, `municipio` e `populacao_total` (IBGE 2021) preenchidos a
+  partir da lista oficial de municípios de MT.
+- `FN033` ausente no SNIS foi tratado como `0` (sem investimento informado).
 
-> Antes de usar este projeto para análises reais/acadêmicas, **substitua
-> `data/snis_mt_2023.csv` pelos dados oficiais do SNIS**, seguindo o passo a
-> passo abaixo. O código não foi alterado de forma alguma - basta trocar o
-> arquivo CSV mantendo as colunas no mesmo formato.
+> Caso surjam Diagnósticos mais recentes, repita o passo a passo abaixo,
+> gere `data/snis_mt_AAAA.csv` no mesmo formato e atualize `DATA_PATH` em
+> `app.py`.
 
-### Como baixar os dados reais do SNIS
+### Como baixar os dados do SNIS
 
-O portal oficial (`app4.mdr.gov.br/serieHistorica`) é uma aplicação
-JavaScript que exige navegação interativa (seleção de UF, município e
-indicadores na tela) e não pode ser automatizada por scripts simples. Baixe
-manualmente:
+O portal de série histórica (`app4.mdr.gov.br/serieHistorica` /
+`app4.cidades.gov.br/serieHistorica`) é uma aplicação JavaScript que exige
+navegação interativa (seleção de UF, município e indicadores na tela) e não
+pode ser automatizada por scripts simples. Baixe manualmente:
 
-1. Acesse <https://app4.mdr.gov.br/serieHistorica/>.
-2. Em **Tipo de pesquisa**, selecione **Série Histórica por Município**.
+1. Acesse <https://app4.cidades.gov.br/serieHistorica/> (ou
+   <https://app4.mdr.gov.br/serieHistorica/>).
+2. Escolha **Informações desagregadas** (ou "Série Histórica por Município").
 3. Em **Abrangência**, selecione **Estado: Mato Grosso (MT)** e marque
-   **todos os municípios** (ou deixe "Selecionar todos").
-4. Em **Indicadores**, marque `IN023`, `IN015`, `IN049` e `FN033` (eles estão
-   em categorias diferentes: IN023/IN049 em "Indicadores - Água", IN015 em
+   **todos os municípios** (ou deixe "Selecionar todos"). Não filtre por
+   **Natureza jurídica** — isso exclui municípios com prestadores de
+   natureza diferente.
+4. Em **Indicadores**, marque `IN055`, `IN015`, `IN049` e `FN033` (eles estão
+   em categorias diferentes: IN055/IN049 em "Indicadores - Água", IN015 em
    "Indicadores - Esgotos" e FN033 em "Informações Financeiras").
-5. Selecione o **ano mais recente disponível** (no momento da criação deste
-   projeto, o último Diagnóstico publicado era referente a 2023).
-6. Clique em **Gerar / Exportar** e baixe o arquivo **CSV**.
+5. Selecione o **ano mais recente disponível** (no momento da atualização
+   deste projeto, o último Diagnóstico completo era referente a 2022).
+6. Clique em **Gerar / Exportar** e baixe o arquivo **CSV** (vem em
+   UTF-16LE com separador `;` e decimais em vírgula — precisa converter
+   antes de usar).
 
-### Formato esperado do CSV (`data/snis_mt_2023.csv`)
+### Formato esperado do CSV (`data/snis_mt_2022.csv`)
 
-O `app.py` espera as seguintes colunas (renomeie/ajuste o CSV exportado do
-SNIS para este formato):
+O `app.py` espera as seguintes colunas:
 
 ```
-ano,codigo_ibge,municipio,populacao_total,prestador,IN023,IN015,IN049,FN033
-2023,5107909,Sinop,148960,Águas de Sinop,99.4,78.2,31.5,18500000.0
+ano,codigo_ibge,municipio,populacao_total,prestador,IN055,IN015,IN049,FN033
+2022,5107909,Sinop,196312,Águas de Sinop S.A.,...,36.9,...,21347506.81
 ...
 ```
 
@@ -69,7 +74,7 @@ ano,codigo_ibge,municipio,populacao_total,prestador,IN023,IN015,IN049,FN033
   investimento per capita a partir de `FN033`).
 - `prestador`: nome do prestador de serviços (informativo, exibido na
   tabela de dados).
-- `IN023`, `IN015`, `IN049`, `FN033`: valores dos indicadores baixados do
+- `IN055`, `IN015`, `IN049`, `FN033`: valores dos indicadores baixados do
   SNIS para o ano de referência.
 
 ### Regerando o dataset de exemplo
@@ -78,9 +83,10 @@ ano,codigo_ibge,municipio,populacao_total,prestador,IN023,IN015,IN049,FN033
 python scripts/generate_sample_data.py
 ```
 
-Isso recria `data/snis_mt_2023.csv` com a lista/população reais dos 142
+Isso recria `data/snis_mt_2022.csv` com a lista/população reais dos 142
 municípios de MT e indicadores sintéticos (Sinop recebe valores fixos
-ilustrativos definidos no topo do script).
+ilustrativos definidos no topo do script) — útil só se o CSV real for
+perdido/sobrescrito.
 
 ---
 
@@ -111,7 +117,7 @@ O dashboard abrirá em `http://localhost:8501`.
 ├── requirements.txt                # Dependências Python
 ├── README.md                       # Este arquivo
 ├── data/
-│   └── snis_mt_2023.csv            # Dados (substituir pelos dados reais do SNIS)
+│   └── snis_mt_2022.csv            # Dados reais do SNIS (40 municipios, ano 2022)
 └── scripts/
     └── generate_sample_data.py     # Gera o dataset de exemplo/placeholder
 ```
@@ -121,7 +127,7 @@ O dashboard abrirá em `http://localhost:8501`.
 ## Deploy no Streamlit Community Cloud
 
 1. Crie um repositório no GitHub e suba estes arquivos (incluindo
-   `data/snis_mt_2023.csv` com os dados reais do SNIS):
+   `data/snis_mt_2022.csv` com os dados reais do SNIS):
 
    ```bash
    git init
@@ -144,7 +150,7 @@ O dashboard abrirá em `http://localhost:8501`.
 
 - **Filtro por município**: barra lateral permite selecionar quais
   municípios entram nos gráficos comparativos (Sinop é sempre incluído).
-- **Cobertura de água e esgoto**: gráficos de barras com IN023 (água) e
+- **Cobertura de água e esgoto**: gráficos de barras com IN055 (água) e
   IN015 (esgoto), Sinop destacado em vermelho, com linha de média estadual.
 - **Índice de perdas na distribuição (IN049)**: gráfico de barras ordenado,
   Sinop destacado.
