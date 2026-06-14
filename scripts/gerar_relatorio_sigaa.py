@@ -133,10 +133,11 @@ pdf.paragrafo(
 pdf.paragrafo(
     "Este projeto consiste no desenvolvimento de um dashboard interativo, "
     "construído em Python com a biblioteca Streamlit, que permite comparar "
-    "indicadores de saneamento básico dos 142 municípios do estado de Mato "
-    "Grosso, com destaque para o posicionamento do município de Sinop "
-    "(operado pela concessionária Águas de Sinop) frente aos demais "
-    "municípios do estado."
+    "indicadores de saneamento básico dos municípios do estado de Mato "
+    "Grosso com dados completos no Diagnóstico SNIS 2022 (40 dos 142 "
+    "municípios do estado), com destaque para o posicionamento do município "
+    "de Sinop (operado pela concessionária Águas de Sinop) frente aos demais "
+    "municípios."
 )
 
 # ---------------------------------------------------------------------------
@@ -171,16 +172,18 @@ pdf.ln(2)
 pdf.titulo_secao("Base de Dados e Metodologia", 3)
 pdf.paragrafo(
     "Os dados utilizados têm como fonte o SNIS (Sistema Nacional de "
-    "Informações sobre Saneamento), por meio da Série Histórica por "
-    "Município, considerando a abrangência do estado de Mato Grosso (MT) e "
-    "o ano mais recente disponível. A lista de municípios e suas respectivas "
-    "populações foram obtidas a partir da API pública do IBGE (estimativas "
-    "2021)."
+    "Informações sobre Saneamento), por meio da consulta de Informações "
+    "Desagregadas por Município, considerando a abrangência do estado de "
+    "Mato Grosso (MT) e o Diagnóstico 2022 (último ano-base com dados "
+    "completos para os indicadores analisados). Dos 142 municípios de MT, "
+    "40 possuíam os quatro indicadores informados no SNIS 2022. A lista de "
+    "municípios e suas respectivas populações foram obtidas a partir da API "
+    "pública do IBGE (estimativas 2021)."
 )
 pdf.paragrafo("Os quatro indicadores centrais da análise são:")
 pdf.tabela_indicadores([
-    ("IN023", "Índice de atendimento urbano de água",
-     "Percentual da população urbana atendida com abastecimento de água."),
+    ("IN055", "Índice de atendimento total de água",
+     "Percentual da população total (urbana + rural) atendida com abastecimento de água."),
     ("IN015", "Índice de coleta de esgoto",
      "Percentual do volume de água consumido cujo esgoto correspondente é coletado."),
     ("IN049", "Índice de perdas na distribuição",
@@ -218,7 +221,7 @@ pdf.titulo_secao("Funcionalidades do Dashboard", 5)
 for item in [
     "Filtro por município: barra lateral permite selecionar quais "
     "municípios entram nos gráficos comparativos (Sinop é sempre incluído);",
-    "Cobertura de água e esgoto: gráficos de barras com IN023 (água) e "
+    "Cobertura de água e esgoto: gráficos de barras com IN055 (água) e "
     "IN015 (esgoto), com Sinop destacado e linha de média estadual;",
     "Índice de perdas na distribuição (IN049): gráfico de barras ordenado, "
     "com Sinop destacado;",
@@ -239,7 +242,8 @@ pdf.paragrafo(
     "se o município de Sinop está acima ou abaixo da média estadual nos "
     "indicadores de cobertura de água, coleta de esgoto, perdas na "
     "distribuição e investimento per capita, bem como sua posição relativa "
-    "(ranking e percentil) frente aos demais 141 municípios de Mato Grosso."
+    "(ranking e percentil) frente aos demais 39 municípios de Mato Grosso "
+    "com dados completos no SNIS 2022."
 )
 pdf.paragrafo(
     "Como produto de aprendizagem na disciplina de Ciência de Dados para "
@@ -262,8 +266,9 @@ pdf.paragrafo(
 pdf.titulo_secao("Referências", 7)
 pdf.paragrafo(
     "BRASIL. Ministério das Cidades. Sistema Nacional de Informações sobre "
-    "Saneamento (SNIS). Série Histórica por Município. Disponível em: "
-    "app4.mdr.gov.br/serieHistorica. Acesso em: " + data_extenso + "."
+    "Saneamento (SNIS). Informações Desagregadas por Município, Diagnóstico "
+    "2022. Disponível em: app4.cidades.gov.br/serieHistorica. "
+    "Acesso em: " + data_extenso + "."
 )
 pdf.paragrafo(
     "IBGE - Instituto Brasileiro de Geografia e Estatística. Estimativas "
